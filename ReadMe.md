@@ -15,3 +15,14 @@
 ## Objetivo do Trabalho
 
 Este trabalho implementa e analisa o desempenho de diferentes estratégias de tabelas hash em Java, comparando métodos de tratamento de colisões e funções hash para conjuntos de dados de diversos tamanhos.
+
+## Estrutura do Projeto
+
+## Arquivos Principais
+
+- `Main.java` → Classe principal com geração de dados, execução de testes e exportação de resultados
+- `Registro.java` → Classe que representa um registro com código de 9 dígitos
+- `TabelaHash.java` → Classe abstrata base para implementações de tabelas hash
+- `HashEncadeamento.java` → Implementação com tratamento de colisões por encadeamento
+- `HashAberto.java` → Implementação com tratamento de colisões por hashing aberto (rehashing)
+- `ListaEncadeada.java` → Estrutura de lista encadeada para o método de encadeamento
