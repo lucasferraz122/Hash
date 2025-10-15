@@ -1,29 +1,29 @@
 import java.util.*;
 import java.io.*;
 
-// classe que representa um registro armazenado na tabela hash
+// classe que representa um registro salvo na tabela hash
 class Registro {
     String cod; // código único do registro
 
     Registro(String c) { cod = c; }
 
-    // retorna o código do registro como string
+    // retorna o código do registro em formato string
     public String toString() { return cod; }
 }
 
 // implementação de uma lista encadeada simples
 class ListaEncadeada {
-    // nó interno da lista
+    // nó interno da lista (guarda o registro e a ligação pro próximo)
     static class No {
         Registro r;
         No prox;
         No(Registro rr) { r = rr; }
     }
 
-    No inicio; // referência para o primeiro nó
-    int tam = 0; // tamanho da lista (quantos registros tem nela)
+    No inicio; // primeiro nó da lista
+    int tam = 0; // quantos registros tem aqui
 
-    // insere um novo registro no início da lista
+    // insere novo registro no começo da lista
     void inserir(Registro rr) {
         No n = new No(rr);
         n.prox = inicio;
@@ -31,7 +31,7 @@ class ListaEncadeada {
         tam++;
     }
 
-    // busca um código dentro da lista
+    // procura um código dentro da lista
     boolean buscar(String c) {
         No aux = inicio;
         while(aux != null) {
@@ -42,21 +42,21 @@ class ListaEncadeada {
     }
 }
 
-// classe abstrata base para as implementações de tabela hash
+// classe base pros tipos de tabela hash
 abstract class TabelaHash {
     int tam; // tamanho da tabela
     int contCol = 0; // contador de colisões
 
     TabelaHash(int t) { tam = t; }
 
-    // métodos abstratos a serem implementados nas subclasses
+    // métodos que vão ser implementados nas classes filhas
     abstract void inserir(Registro r);
     abstract boolean buscar(String c);
 }
 
-// implementação de tabela hash com encadeamento separado
+// tabela hash usando encadeamento separado
 class HashEncadeamento extends TabelaHash {
-    ListaEncadeada[] tab; // vetor de listas encadeadas (buckets)
+    ListaEncadeada[] tab; // vetor de listas (os buckets)
 
     HashEncadeamento(int t) {
         super(t);
@@ -64,41 +64,41 @@ class HashEncadeamento extends TabelaHash {
         for(int i=0; i<t; i++) tab[i] = new ListaEncadeada();
     }
 
-    // função de hash por divisão
+    // hash por divisão (simples e direto)
     int hashDiv(String c) { return Math.abs(Integer.parseInt(c) % tam); }
 
-    // função de hash por multiplicação
+    // hash por multiplicação (usa constante de Knuth)
     int hashMult(String c) {
-        double A = 0.618; // constante de Knuth
+        double A = 0.618;
         int k = Integer.parseInt(c);
         return (int)(tam * ((k * A) % 1));
     }
 
-    // função de hash por soma dos caracteres
+    // hash pela soma dos caracteres
     int hashSoma(String c) {
         int s = 0;
         for(char ch : c.toCharArray()) s += ch;
         return s % tam;
     }
 
-    // escolhe a função de hash conforme o tipo (1 = divisão, 2 = multiplicação, 3 = soma)
+    // escolhe qual hash usar (1 = div, 2 = mult, 3 = soma)
     int hashEscolhe(String c, int t) {
         if(t==1) return hashDiv(c);
         if(t==2) return hashMult(c);
         return hashSoma(c);
     }
 
-    // insere um registro aplicando o método de hash selecionado
+    // insere o registro usando a função hash escolhida
     void inserir(Registro r, int t) {
         int pos = hashEscolhe(r.cod, t);
-        if(tab[pos].inicio != null) contCol++; // conta colisão se a posição já estava ocupada
+        if(tab[pos].inicio != null) contCol++; // se já tinha algo, é colisão
         tab[pos].inserir(r);
     }
 
     @Override
     void inserir(Registro r) { inserir(r,1); }
 
-    // busca um registro aplicando o hash selecionado
+    // busca um registro usando a função de hash certa
     boolean buscar(String c, int t) {
         int pos = hashEscolhe(c, t);
         return tab[pos].buscar(c);
@@ -107,7 +107,7 @@ class HashEncadeamento extends TabelaHash {
     @Override
     boolean buscar(String c) { return buscar(c,1); }
 
-    // retorna as três maiores listas (em tamanho) da tabela
+    // retorna as 3 maiores listas da tabela
     List<Integer> maiores() {
         List<Integer> l = new ArrayList<>();
         for(ListaEncadeada x : tab) l.add(x.tam);
@@ -116,17 +116,17 @@ class HashEncadeamento extends TabelaHash {
     }
 }
 
-// implementação de tabela hash com endereçamento aberto
+// tabela hash usando endereçamento aberto
 class HashAberto extends TabelaHash {
     Registro[] tab; // vetor de registros
-    boolean[] occ;  // vetor que indica se a posição já foi ocupada
-    int tipoHash, tipoProbe; // tipo de função hash e tipo de sondagem
+    boolean[] occ;  // marca se a posição já foi usada
+    int tipoHash, tipoProbe; // tipo do hash e tipo da sondagem
 
     HashAberto(int t, int h, int p) {
         super(t);
         tab = new Registro[t];
         occ = new boolean[t];
-        tipoHash = h;  // 1 = divisão, 2 = multiplicação, 3 = soma
+        tipoHash = h;  // 1 = div, 2 = mult, 3 = soma
         tipoProbe = p; // 1 = linear, 2 = quadrática, 3 = dupla
     }
 
@@ -145,14 +145,14 @@ class HashAberto extends TabelaHash {
         return s % tam;
     }
 
-    // escolhe a função base de hash
+    // escolhe qual hash base vai ser usado
     int hBase(String c) {
         if(tipoHash==1) return hDiv(c);
         if(tipoHash==2) return hMult(c);
         return hSoma(c);
     }
 
-    // função de sondagem dupla (double hashing)
+    // sondagem dupla (double hashing)
     int hDuplo(String c, int i) {
         int h1 = hBase(c);
         int h2 = 1 + (Integer.parseInt(c) % (tam-1));
@@ -165,7 +165,7 @@ class HashAberto extends TabelaHash {
     // sondagem quadrática
     int hQuad(String c, int i) { return (hBase(c) + i*i) % tam; }
 
-    // escolhe o tipo de sondagem de acordo com o modo
+    // escolhe qual tipo de sondagem usar
     int probe(String c, int i) {
         if(tipoProbe==1) return hLin(c,i);
         if(tipoProbe==2) return hQuad(c,i);
@@ -177,33 +177,33 @@ class HashAberto extends TabelaHash {
     void inserir(Registro r) {
         for(int i=0; i<tam; i++) {
             int pos = probe(r.cod, i);
-            if(!occ[pos]) { // se posição está livre, insere
+            if(!occ[pos]) { // achou um espaço livre
                 tab[pos]=r;
                 occ[pos]=true;
                 return;
-            } else contCol++; // caso contrário, conta colisão
+            } else contCol++; // deu colisão
         }
     }
 
-    // busca um código na tabela
+    // busca um código dentro da tabela
     @Override
     boolean buscar(String c) {
         for(int i=0;i<tam;i++) {
             int pos = probe(c,i);
-            if(occ[pos] && tab[pos].cod.equals(c)) return true; // encontrou
-            if(!occ[pos]) return false; // posição vazia = não encontrado
+            if(occ[pos] && tab[pos].cod.equals(c)) return true; // achou
+            if(!occ[pos]) return false; // posição livre = não existe
         }
         return false;
     }
 }
 
 public class Main {
-    // gera um código aleatório com 9 dígitos
+    // gera código aleatório de 9 dígitos
     static String genCod(Random r) {
         return String.format("%09d", r.nextInt(1000000000));
     }
 
-    // gera uma lista de registros únicos com base em um seed
+    // gera lista de registros únicos com base em um seed
     static List<Registro> geraDados(int q, long s) {
         Random r = new Random(s);
         Set<String> set = new HashSet<>();
@@ -213,38 +213,39 @@ public class Main {
         return l;
     }
 
-    // salva os resultados em um arquivo CSV
+    // salva os resultados num arquivo csv
     static void salvaCSV(String c) {
         try(FileWriter fw = new FileWriter("res.csv", true)) {
             fw.write(c+"\n");
         } catch(Exception e) {}
     }
 
-    // função principal — executa os testes de desempenho
+    // função principal — roda os testes e mede desempenho
     public static void main(String[] args) {
-        // tamanhos das tabelas e conjuntos de dados
-        int[] tams = {1000,10000,100000};
-        int[] dsets = {100000,1000000,10000000};
+        int[] tams = {1000,10000,100000}; // tamanhos das tabelas
+        int[] dsets = {100000,1000000,10000000}; // tamanhos dos dados
         long s = 12345;
 
-        // cabeçalho do CSV de resultados
         salvaCSV("tipo,tam_tab,tam_dados,hash,modo,tempo_ins,colisoes,tempo_busca,achados,maiores,gaps");
 
-        // loop principal de testes
         for(int tam : tams) {
             for(int d : dsets) {
+                System.out.println("\n-------------------------------------");
+                System.out.println("tamanho da tabela: " + tam + " | qtd de dados: " + d);
+                System.out.println("-------------------------------------");
+
                 List<Registro> regs = geraDados(d,s);
 
-                // teste para cada tipo de função hash (1=div, 2=mult, 3=soma)
+                // testa com os 3 tipos de hash
                 for(int h=1; h<=3; h++) {
 
-                    // Hash com encadeamento
+                    // hash com encadeamento
                     HashEncadeamento enc = new HashEncadeamento(tam);
 
                     long ini = System.nanoTime();
                     for(Registro r : regs) enc.inserir(r,h);
                     long fim = System.nanoTime();
-                    double tIns = (fim-ini)/1e6; // tempo em ms
+                    double tIns = (fim-ini)/1e6;
                     int cCol = enc.contCol;
 
                     ini = System.nanoTime();
@@ -254,12 +255,18 @@ public class Main {
                     double tBus = (fim-ini)/1e6;
                     List<Integer> mai = enc.maiores();
 
-                    // salva resultados do encadeamento
+                    // printa resultados do encadeamento
+                    System.out.println("\nencadeamento - hash " + h);
+                    System.out.println("tempo de inserção: " + tIns + " ms");
+                    System.out.println("colisões: " + cCol);
+                    System.out.println("tempo de busca: " + tBus + " ms");
+                    System.out.println("achados: " + ach);
+                    System.out.println("maiores listas: " + mai);
+
                     salvaCSV("enc,"+tam+","+d+","+h+",nulo,"+tIns+","+cCol+","+tBus+","+ach+","+mai+",--");
 
-                    //  Hash com endereçamento aberto
+                    // hash com endereçamento aberto
                     for(int p=1; p<=3; p++) {
-                        // p = 1 (linear), 2 (quadrática), 3 (dupla)
                         HashAberto ab = new HashAberto(tam,h,p);
 
                         ini = System.nanoTime();
@@ -274,13 +281,19 @@ public class Main {
                         fim = System.nanoTime();
                         tBus = (fim-ini)/1e6;
 
-                        //salva resultados do endereçamento aberto
+                        // printa resultados do aberto
+                        System.out.println("\naberto - hash " + h + " | probe " + p);
+                        System.out.println("tempo de inserção: " + tIns + " ms");
+                        System.out.println("colisões: " + cCol);
+                        System.out.println("tempo de busca: " + tBus + " ms");
+                        System.out.println("achados: " + ach);
+
                         salvaCSV("ab,"+tam+","+d+","+h+","+p+","+tIns+","+cCol+","+tBus+","+ach+",--,--");
                     }
                 }
             }
         }
 
-        System.out.println("terminou, checa res.csv");
+        System.out.println("\nterminou! confere o res.csv");
     }
 }
