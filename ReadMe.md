@@ -59,6 +59,120 @@ Este trabalho implementa e analisa o desempenho de diferentes estratégias de ta
 - Elementos encontrados na busca
 - Três maiores listas encadeadas (apenas encadeamento)
 
+# 📊 Análise de Desempenho das Tabelas Hash
+
+## 🔧 Configuração dos Testes
+
+Foram testadas duas abordagens principais:
+
+- **Encadeamento (enc)**
+- **Endereçamento Aberto (ab)** com três variações de função de rehash
+
+**Configurações:**
+- **Tamanho da tabela:** 1000  
+- **Tamanho dos dados:** 100.000 e 1.000.000 elementos  
+- **Funções hash testadas:** hash 1, hash 2 e hash 3  
+
+---
+
+## 🧩 Resultados — 100.000 dados
+
+### ⏱️ Tempo de Inserção (ms)
+
+| Tipo | Hash | Tempo Médio |
+|------|------|-------------|
+| enc  | 1    | 44,0        |
+| enc  | 2    | 12,2        |
+| enc  | 3    | 15,8        |
+| ab   | 1    | 3340,0      |
+| ab   | 2    | 3200,0      |
+| ab   | 3    | 6670,0      |
+
+**Discussão:**  
+As tabelas de **encadeamento** foram **muito mais rápidas** na inserção, com destaque para a função hash 2.  
+As tabelas com **endereçamento aberto** apresentaram desempenho bem inferior, indicando forte impacto das colisões.
+
+---
+
+### ⚡ Tempo de Busca (ms)
+
+| Tipo | Hash | Tempo Médio |
+|------|------|-------------|
+| enc  | 1    | 250,9       |
+| enc  | 2    | 292,7       |
+| enc  | 3    | 10808,6     |
+| ab   | 1    | 3930,0      |
+| ab   | 2    | 3770,0      |
+| ab   | 3    | 7740,0      |
+
+**Discussão:**  
+A busca também favoreceu o **encadeamento**, principalmente nas funções hash 1 e 2.  
+A função hash 3 teve desempenho ruim, indicando **mau espalhamento** e **maior número de colisões**.
+
+---
+
+### 💥 Colisões
+
+| Tipo | Hash | Colisões |
+|------|------|----------|
+| enc  | 1    | 99.000   |
+| enc  | 2    | 99.023   |
+| enc  | 3    | 99.934   |
+| ab   | 1–3  | ~99.000.000 |
+
+**Discussão:**  
+O **endereçamento aberto** apresentou um **número altíssimo de colisões**, justificando o tempo elevado.  
+Já o **encadeamento** teve valores estáveis e bem menores.
+
+---
+
+## 🧠 Resultados — 1.000.000 dados
+
+### ⏱️ Tempo de Inserção (ms)
+
+| Tipo | Hash | Tempo Médio |
+|------|------|-------------|
+| enc  | 1    | 226,7       |
+| enc  | 2    | 299,3       |
+| enc  | 3    | 1580,0      |
+| ab   | 1    | 40598,8     |
+| ab   | 2    | 35807,8     |
+| ab   | 3    | 68251,3     |
+
+### ⚡ Tempo de Busca (ms)
+
+| Tipo | Hash | Tempo Médio |
+|------|------|-------------|
+| enc  | 1    | 63858,1     |
+| enc  | 2    | 61643,8     |
+| enc  | 3    | 10808,6     |
+| ab   | 1    | 61376,8     |
+| ab   | 2    | 60488,4     |
+| ab   | 3    | 86417,5     |
+
+### 💥 Colisões
+
+| Tipo | Hash | Colisões |
+|------|------|----------|
+| enc  | 1    | 999.000  |
+| enc  | 2    | 999.012  |
+| enc  | 3    | 999.934  |
+| ab   | 1–3  | ~999.000.000 |
+
+---
+
+## 📊 Discussão Geral
+
+- O **encadeamento** apresenta tempos de inserção e busca significativamente melhores do que o endereçamento aberto.  
+- Funções hash diferentes impactam o desempenho; a **hash 2** geralmente distribui melhor os elementos, resultando em menos colisões.  
+- O **endereçamento aberto** sofre com colisões massivas, especialmente em grandes volumes de dados, tornando-o mais lento.  
+- Funções hash ruins (como hash 3 no encadeamento) aumentam consideravelmente o tempo de busca.  
+
+**Conclusão:**  
+Para grandes volumes de dados, o **encadeamento com função hash bem escolhida** é a abordagem mais eficiente.  
+O **endereçamento aberto** precisa de otimizações ou tabelas maiores para ter desempenho aceitável.
+
+
 ## Como Executar
 
 ### Pré-requisitos
