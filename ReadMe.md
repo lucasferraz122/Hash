@@ -59,9 +59,9 @@ Este trabalho implementa e analisa o desempenho de diferentes estratégias de ta
 - Elementos encontrados na busca
 - Três maiores listas encadeadas (apenas encadeamento)
 
-# 📊 Análise de Desempenho das Tabelas Hash
+# Análise de Desempenho das Tabelas Hash
 
-## 🔧 Configuração dos Testes
+## Configuração dos Testes
 
 Foram testadas duas abordagens principais:
 
@@ -75,9 +75,9 @@ Foram testadas duas abordagens principais:
 
 ---
 
-## 🧩 Resultados — 100.000 dados
+## Resultados — 100.000 dados
 
-### ⏱️ Tempo de Inserção (ms)
+### Tempo de Inserção (ms)
 
 | Tipo | Hash | Tempo Médio |
 |------|------|-------------|
@@ -94,7 +94,7 @@ As tabelas com **endereçamento aberto** apresentaram desempenho bem inferior, i
 
 ---
 
-### ⚡ Tempo de Busca (ms)
+### Tempo de Busca (ms)
 
 | Tipo | Hash | Tempo Médio |
 |------|------|-------------|
@@ -111,7 +111,7 @@ A função hash 3 teve desempenho ruim, indicando **mau espalhamento** e **maior
 
 ---
 
-### 💥 Colisões
+### Colisões
 
 | Tipo | Hash | Colisões |
 |------|------|----------|
@@ -126,9 +126,9 @@ Já o **encadeamento** teve valores estáveis e bem menores.
 
 ---
 
-## 🧠 Resultados — 1.000.000 dados
+## Resultados — 1.000.000 dados
 
-### ⏱️ Tempo de Inserção (ms)
+### Tempo de Inserção (ms)
 
 | Tipo | Hash | Tempo Médio |
 |------|------|-------------|
@@ -139,7 +139,7 @@ Já o **encadeamento** teve valores estáveis e bem menores.
 | ab   | 2    | 35807,8     |
 | ab   | 3    | 68251,3     |
 
-### ⚡ Tempo de Busca (ms)
+### Tempo de Busca (ms)
 
 | Tipo | Hash | Tempo Médio |
 |------|------|-------------|
@@ -150,7 +150,7 @@ Já o **encadeamento** teve valores estáveis e bem menores.
 | ab   | 2    | 60488,4     |
 | ab   | 3    | 86417,5     |
 
-### 💥 Colisões
+### Colisões
 
 | Tipo | Hash | Colisões |
 |------|------|----------|
@@ -161,7 +161,7 @@ Já o **encadeamento** teve valores estáveis e bem menores.
 
 ---
 
-## 📊 Discussão Geral
+## Discussão Geral
 
 - O **encadeamento** apresenta tempos de inserção e busca significativamente melhores do que o endereçamento aberto.  
 - Funções hash diferentes impactam o desempenho; a **hash 2** geralmente distribui melhor os elementos, resultando em menos colisões.  
